@@ -5,7 +5,7 @@ const server = new WebSocketServer({ port: 5050 })
 type Player = {
   name: string
   icon: string
-  state: 'preparing' | 'ready'
+  state: 'preparing' | 'ready' | 'disconnected'
   score: number
 }
 
@@ -89,9 +89,14 @@ server.on('connection', (socket) => {
   socket.on('close', () => {
     for (const uuid in connectionTable) {
       if (connectionTable[uuid].socket == socket) {
-        delete gameTable[connectionTable[uuid].code].players[uuid]
+        gameTable[connectionTable[uuid].code].players[uuid].state =
+          'disconnected'
         const players = Object.keys(
           gameTable[connectionTable[uuid].code].players
+        ).filter(
+          (uuid) =>
+            gameTable[connectionTable[uuid].code].players[uuid].state !=
+            'disconnected'
         ).length
         if (players == 0) delete gameTable[connectionTable[uuid].code]
         delete connectionTable[uuid]
