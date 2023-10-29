@@ -94,11 +94,12 @@ server.on('connection', (socket) => {
         const players = Object.keys(
           gameTable[connectionTable[uuid].code].players
         ).filter(
-          (uuid) =>
-            gameTable[connectionTable[uuid].code].players[uuid].state !=
+          (player) =>
+            gameTable[connectionTable[uuid].code].players[player].state !=
             'disconnected'
         ).length
         if (players == 0) delete gameTable[connectionTable[uuid].code]
+        updateGame(connectionTable[uuid].code)
         delete connectionTable[uuid]
         break
       }
