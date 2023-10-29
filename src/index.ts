@@ -22,7 +22,6 @@ type Game = {
     }
     target: string
     since: number
-    maxScore: number
   }
   hide?: {
     player: string
