@@ -4,7 +4,6 @@ const server = new WebSocketServer({ port: 5050 })
 
 type Player = {
   name: string
-  icon: string
   state: 'preparing' | 'ready' | 'disconnected'
   score: number
 }
