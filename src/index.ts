@@ -87,7 +87,10 @@ server.on('connection', (socket) => {
 
   socket.on('close', () => {
     for (const uuid in connectionTable) {
-      if (connectionTable[uuid].socket == socket) {
+      if (
+        connectionTable[uuid].socket == socket &&
+        gameTable[connectionTable[uuid].code]
+      ) {
         gameTable[connectionTable[uuid].code].players[uuid].state =
           'disconnected'
         const players = Object.keys(
