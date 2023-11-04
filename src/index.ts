@@ -6,11 +6,11 @@ type Player = {
   name: string
   state: 'preparing' | 'ready' | 'disconnected'
   score: number
+  hideCount: number
 }
 
 type Game = {
   state: 'preparing' | 'ready' | 'ongoing' | 'finished'
-  turn: number
   players: {
     [uuid: string]: Player
   }
@@ -25,9 +25,6 @@ type Game = {
   hide?: {
     player: string
     since: number
-  }
-  interval?: {
-    nextPlayer: string
   }
 }
 
@@ -55,7 +52,7 @@ server.on('connection', (socket) => {
     const recieve: {
       uuid: string
       code: string
-      setPlayer?: { uuid: string; body: Player }
+      setPlayer?: { [uuid: string]: Player }
       setGame?: Game
     } = JSON.parse(message.toString())
     if (!connectionTable[recieve.uuid])
@@ -67,14 +64,13 @@ server.on('connection', (socket) => {
     if (!gameTable[recieve.code]) {
       gameTable[recieve.code] = {
         state: 'preparing',
-        turn: 0,
         players: {},
       }
     }
 
     if (recieve.setPlayer)
-      gameTable[recieve.code].players[recieve.setPlayer.uuid] =
-        recieve.setPlayer.body
+      for (const uuid in recieve.setPlayer)
+        gameTable[recieve.code].players[uuid] = recieve.setPlayer[uuid]
 
     if (recieve.setGame) {
       const currentPlayers = { ...gameTable[recieve.code].players }
